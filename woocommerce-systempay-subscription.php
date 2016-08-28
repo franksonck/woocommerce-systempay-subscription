@@ -51,15 +51,16 @@ function woocommerce_systempay_subscription_filter_gateways($gateways)
 
     // We keep only one payment options and tweak it depending on date
     foreach ($gateways['systempaymulti']->settings['payment_options'] as $key => $fields) {
+        $option = $gateways['systempaymulti']->settings['payment_options'][$key];
         $gateways['systempaymulti']->settings['payment_options'] = [
             $key => [
-                'label' => 'Paiement mensuel',
-                'amount_min' => '1',
-                'amount_max' => '4600',
-                'contract' => '',
+                'label' => $option['label'],
+                'amount_min' => $option['amount_min'],
+                'amount_max' => $option['amount_max'],
+                'contract' => $option['contract'],
                 'count' => strval(woocommerce_systempay_subscription_get_periods()),
-                'period' => '30',
-                'first' => '',
+                'period' => $option['period'],
+                'first' => $option['first'],
             ],
         ];
     }
