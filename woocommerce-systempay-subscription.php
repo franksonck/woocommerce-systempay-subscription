@@ -183,7 +183,15 @@ function woocommerce_systempay_subscription_get_periods($period = null)
     return intval($days_diff / 30) + 1;
 }
 
-add_action('woocommerce_single_product_summary', 'woocommerce_systempay_subscription_before_add_to_cart_button', 8);
+
+add_action('init', 'woocommerce_systempay_subscription_change_excerpt_order', 10);
+function woocommerce_systempay_subscription_change_excerpt_order()
+{
+  remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20);
+  add_action('woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 35);
+}
+
+add_action('woocommerce_before_add_to_cart_button', 'woocommerce_systempay_subscription_before_add_to_cart_button', 8);
 function woocommerce_systempay_subscription_before_add_to_cart_button()
 {
   wc_get_template(
