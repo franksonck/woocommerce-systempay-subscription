@@ -131,6 +131,13 @@ function woocommerce_systempay_subscription_add_cart_item_data($cart_item_data)
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
+    if (!isset($_REQUEST['systempay-subscription-repetition'])) {
+      return $cart_item_data;
+    }
+
+    $cart_item_data['systempay-subscription-repetition'] =
+      woocommerce_systempay_subscription_get_periods($_REQUEST['systempay-subscription-repetition']);
+
     return $cart_item_data;
 }
 
@@ -139,9 +146,7 @@ function woocommerce_systempay_subscription_add_cart_item_data($cart_item_data)
 add_filter('woocommerce_add_cart_item', 'woocommerce_systempay_subscription_add_cart_item');
 function woocommerce_systempay_subscription_add_cart_item($cart_item)
 {
-    if (woocommerce_systempay_subscription_is_subscription($cart_item['product_id'])) {
-        $cart_item['quantity'] = woocommerce_systempay_subscription_get_periods();
-    }
+    $cart_item['quantity'] = $cart_item['systempay-subscription-repetition'];
 
     return $cart_item;
 }
@@ -155,21 +160,36 @@ function woocommerce_systempay_subscription_is_subscription($product_id = null)
     }
 
     global $woocommerce;
-    foreach ($woocommerce->cart->cart_contents as $key => $values) {
-        if (!has_term('mensuel', 'product_tag', $values['product_id'])) {
-            return false;
-        }
-    }
-
-    return true;
+    return (woocommerce_systempay_subscription_get_periods() > 1);
 }
 
 // Utility function to determine number of periods
-function woocommerce_systempay_subscription_get_periods()
+function woocommerce_systempay_subscription_get_periods($period = null)
 {
+    global $woocommerce;
+
+    if ($period === null) {
+      $period = array_values($woocommerce->cart->cart_contents)[0]['systempay-subscription-repetition'];
+    }
+
+    if ($period !== 'end') {
+      return is_numeric($period) ? $period : 1;
+    }
+
     // 15 juin 2017
     $timestamp = 1497563999;
     $days_diff = intval(($timestamp - time()) / (24 * 60 * 60));
 
     return intval($days_diff / 30) + 1;
+}
+
+add_action('woocommerce_before_add_to_cart_button', 'woocommerce_systempay_subscription_before_add_to_cart_button', 8);
+function woocommerce_systempay_subscription_before_add_to_cart_button()
+{
+  wc_get_template(
+    'single-product/repetition-choice.php',
+    [],
+    false,
+    plugin_dir_path(__FILE__).'templates/'
+  );
 }
