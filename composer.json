@@ -2,6 +2,10 @@
   "name": "jlm2017/woocommerce-systempay-subscription",
   "type": "wordpress-plugin",
   "keywords": ["wordpress", "plugin"],
+  "require": {
+    "php": ">=5.3.2",
+    "composer/installers": "~1.0"
+  },
   "homepage": "https://github.com/jlm2017/woocommerce-systempay-subscription",
   "license": "GPL-3.0",
   "authors": [
@@ -10,10 +14,5 @@
       "email": "perso@guilro.com",
       "homepage": "https://blog.guilro.com"
     }
-  ],
-  "type": "wordpress-plugin",
-  "require": {
-    "php": ">=5.3.2",
-    "composer/installers": "~v1.0.6"
-  }
+  ]
 }
